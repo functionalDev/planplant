@@ -90,7 +90,37 @@ export default function CreateGarden() {
   const handleGPSLocate = async () => {
     setLocating(true);
     setLocationError("");
+
+    // Check if geolocation is supported
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by this browser.");
+      setLocating(false);
+      return;
+    }
+
+    // Check current permission state for better UX messaging
+    let permissionState: PermissionState | null = null;
+    if (navigator.permissions) {
+      try {
+        const status = await navigator.permissions.query({
+          name: "geolocation",
+        });
+        permissionState = status.state;
+      } catch {
+        // permissions.query not supported for geolocation in some browsers
+      }
+    }
+
+    if (permissionState === "denied") {
+      setLocationError(
+        "Location permission is blocked. Please click the lock icon (🔒) in the address bar → Site settings → Location → Allow, then reload the page.",
+      );
+      setLocating(false);
+      return;
+    }
+
     try {
+      // This call triggers the browser permission prompt if state is "prompt"
       const position = await getCurrentPosition();
       const { latitude, longitude } = position.coords;
       const result = await reverseGeocode(latitude, longitude);
@@ -102,9 +132,17 @@ export default function CreateGarden() {
     } catch (err) {
       const error = err as GeolocationPositionError;
       if (error.code === 1) {
-        setLocationError("Location access denied.");
+        setLocationError(
+          "Location access denied. Click the lock icon (🔒) in the address bar → allow location, then try again.",
+        );
+      } else if (error.code === 2) {
+        setLocationError(
+          "Location unavailable. Make sure GPS/location services are enabled on your device.",
+        );
+      } else if (error.code === 3) {
+        setLocationError("Location request timed out. Please try again.");
       } else {
-        setLocationError("Location unavailable. Please try again.");
+        setLocationError("Could not get location. Please try again.");
       }
     } finally {
       setLocating(false);
