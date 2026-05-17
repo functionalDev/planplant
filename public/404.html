@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>PlanPlant</title>
+  <script>
+    // GitHub Pages SPA routing workaround
+    // Redirects all 404s back to index.html with the path preserved
+    var basePath = '/planplant';
+    var path = window.location.pathname;
+    if (path.startsWith(basePath)) {
+      path = path.slice(basePath.length);
+    }
+    window.location.replace(
+      basePath + '/?redirect=' + encodeURIComponent(basePath + path + window.location.search + window.location.hash)
+    );
+  </script>
+</head>
+<body></body>
+</html>

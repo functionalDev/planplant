@@ -8,6 +8,15 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
     <title>PlanPlant</title>
+    <script>
+      // GitHub Pages SPA redirect handler
+      (function() {
+        var redirect = new URLSearchParams(window.location.search).get('redirect');
+        if (redirect) {
+          history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

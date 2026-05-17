@@ -4,6 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "url";
 
 export default defineConfig({
+  base: "/planplant/",
   plugins: [
     solid(),
     VitePWA({
@@ -16,7 +17,7 @@ export default defineConfig({
         theme_color: "#2e7d32",
         background_color: "#ffffff",
         display: "standalone",
-        start_url: "/",
+        start_url: "/planplant/",
         icons: [
           {
             src: "icon.svg",
