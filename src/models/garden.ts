@@ -59,6 +59,19 @@ export interface GardenElement {
   createdAt: Date;
 }
 
+export interface GardenPhoto {
+  id: string;
+  /** Image blob ID stored in IndexedDB images store */
+  imageId: string;
+  /** GPS coordinates where the photo was taken */
+  gps: { lat: number; lng: number };
+  /** Canvas position (computed from GPS + geoReference) */
+  position: { x: number; y: number };
+  /** Optional label/note */
+  label?: string;
+  createdAt: Date;
+}
+
 export interface Garden {
   id: string;
   name: string;
@@ -72,6 +85,8 @@ export interface Garden {
   elements: GardenElement[];
   /** Ground layer regions (beds, grass, paths, water, buildings) */
   groundRegions: GroundRegion[];
+  /** Geo-tagged photos placed on the garden map */
+  photos: GardenPhoto[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,6 +103,7 @@ export function createGarden(
     ownerId,
     elements: [],
     groundRegions: [],
+    photos: [],
     createdAt: now,
     updatedAt: now,
     ...overrides,

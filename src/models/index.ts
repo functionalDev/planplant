@@ -5,6 +5,7 @@ export type {
   GardenGeoReference,
   GardenElement,
   GardenElementType,
+  GardenPhoto,
   GroundType,
   GroundRegion,
 } from "./garden";

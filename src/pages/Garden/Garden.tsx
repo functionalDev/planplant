@@ -8,6 +8,7 @@ import {
   addGroundRegion,
   deleteGroundRegion,
   updateGroundRegions,
+  deletePhoto,
 } from "~/stores";
 import { GardenEditor } from "~/components/GardenEditor";
 import type { Garden, GardenElement, GroundRegion } from "~/models";
@@ -16,6 +17,7 @@ import styles from "./Garden.module.css";
 interface GardenData {
   garden: Garden;
   backgroundUrl?: string;
+  photoImageUrls: Record<string, string>;
 }
 
 export default function GardenPage() {
@@ -32,7 +34,16 @@ export default function GardenPage() {
         backgroundUrl = await loadGardenImage(garden.backgroundImageId);
       }
 
-      return { garden, backgroundUrl };
+      // Load photo image URLs
+      const photoImageUrls: Record<string, string> = {};
+      for (const photo of garden.photos ?? []) {
+        const url = await loadGardenImage(photo.imageId);
+        if (url) {
+          photoImageUrls[photo.imageId] = url;
+        }
+      }
+
+      return { garden, backgroundUrl, photoImageUrls };
     },
   );
 
@@ -79,6 +90,13 @@ export default function GardenPage() {
     const d = data();
     if (!d) return;
     await updateGroundRegions(d.garden.id, regions);
+    refetch();
+  };
+
+  const handlePhotoDelete = async (photoId: string) => {
+    const d = data();
+    if (!d) return;
+    await deletePhoto(d.garden.id, photoId);
     refetch();
   };
 
@@ -136,11 +154,13 @@ export default function GardenPage() {
                 <GardenEditor
                   garden={d().garden}
                   backgroundImageUrl={d().backgroundUrl}
+                  photoImageUrls={d().photoImageUrls}
                   onElementAdd={handleElementAdd}
                   onElementMove={handleElementMove}
                   onGroundRegionAdd={handleGroundRegionAdd}
                   onGroundRegionDelete={handleGroundRegionDelete}
                   onGroundRegionsReplace={handleGroundRegionsReplace}
+                  onPhotoDelete={handlePhotoDelete}
                 />
               </Show>
             </div>

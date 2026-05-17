@@ -1,5 +1,5 @@
 import { createSignal, createResource, createMemo } from "solid-js";
-import type { Garden, GardenLocation, GardenElement, GroundRegion } from "~/models";
+import type { Garden, GardenLocation, GardenElement, GardenPhoto, GroundRegion } from "~/models";
 import { indexedDBAdapter } from "~/db";
 import { createGardenService } from "~/services";
 
@@ -62,7 +62,7 @@ export async function addGarden(
 
 export async function updateGarden(
   id: string,
-  updates: Partial<Pick<Garden, "name" | "description" | "location" | "geoReference" | "backgroundImageId" | "border" | "elements" | "groundRegions">>,
+  updates: Partial<Pick<Garden, "name" | "description" | "location" | "geoReference" | "backgroundImageId" | "border" | "elements" | "groundRegions" | "photos">>,
 ): Promise<Garden> {
   const garden = await gardenService.updateGarden(id, updates);
   invalidateGardens();
@@ -150,6 +150,35 @@ export async function updateGroundRegions(
   groundRegions: GroundRegion[],
 ): Promise<void> {
   await gardenService.updateGarden(gardenId, { groundRegions });
+  invalidateGardens();
+}
+
+// Photo operations
+export async function addPhoto(
+  gardenId: string,
+  photo: GardenPhoto,
+  imageBlob: Blob,
+): Promise<void> {
+  await indexedDBAdapter.saveImage(photo.imageId, imageBlob);
+  const garden = await gardenService.getGarden(gardenId);
+  if (!garden) return;
+  const photos = [...(garden.photos ?? []), photo];
+  await gardenService.updateGarden(gardenId, { photos });
+  invalidateGardens();
+}
+
+export async function deletePhoto(
+  gardenId: string,
+  photoId: string,
+): Promise<void> {
+  const garden = await gardenService.getGarden(gardenId);
+  if (!garden) return;
+  const photo = (garden.photos ?? []).find((p) => p.id === photoId);
+  if (photo) {
+    await indexedDBAdapter.deleteImage(photo.imageId);
+  }
+  const photos = (garden.photos ?? []).filter((p) => p.id !== photoId);
+  await gardenService.updateGarden(gardenId, { photos });
   invalidateGardens();
 }
 

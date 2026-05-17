@@ -7,7 +7,7 @@ import {
 } from "solid-js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { Garden, GardenElement, GroundRegion, GroundType } from "~/models";
+import type { Garden, GardenElement, GardenPhoto, GroundRegion, GroundType } from "~/models";
 import { createGardenElement, createGroundRegion } from "~/models";
 import Toolbar, { type EditorTool, type GroundViewMode } from "./Toolbar";
 import GroundToolbar from "./GroundToolbar";
@@ -19,12 +19,15 @@ import styles from "./GardenEditor.module.css";
 interface GardenEditorProps {
   garden: Garden;
   backgroundImageUrl?: string;
+  /** Map from photo imageId → object URL for rendering */
+  photoImageUrls?: Record<string, string>;
   onElementAdd?: (element: GardenElement) => void;
   onElementMove?: (id: string, position: { x: number; y: number }) => void;
   onElementDelete?: (id: string) => void;
   onGroundRegionAdd?: (region: GroundRegion) => void;
   onGroundRegionDelete?: (id: string) => void;
   onGroundRegionsReplace?: (regions: GroundRegion[]) => void;
+  onPhotoDelete?: (photoId: string) => void;
 }
 
 export default function GardenEditor(props: GardenEditorProps) {
@@ -34,6 +37,7 @@ export default function GardenEditor(props: GardenEditorProps) {
   let borderLayer: L.Polygon | null = null;
   let elementsLayer: L.LayerGroup | null = null;
   let groundLayer: L.LayerGroup | null = null;
+  let photosLayer: L.LayerGroup | null = null;
   let freehandEngine: FreehandDrawingEngine | null = null;
 
   const [activeTool, setActiveTool] = createSignal<EditorTool>("select");
@@ -139,6 +143,10 @@ export default function GardenEditor(props: GardenEditorProps) {
     elementsLayer = L.layerGroup().addTo(map);
     renderElements();
 
+    // Layer 5: Photos
+    photosLayer = L.layerGroup().addTo(map);
+    renderPhotos();
+
     // Click handler for element placement
     map.on("click", handleMapClick);
   }
@@ -229,6 +237,43 @@ export default function GardenEditor(props: GardenEditorProps) {
         const pos = marker.getLatLng();
         props.onElementMove?.(element.id, { x: pos.lng, y: pos.lat });
       });
+    }
+  }
+
+  // ── Photo Rendering ──
+
+  function renderPhotos() {
+    if (!photosLayer || !map) return;
+    photosLayer.clearLayers();
+
+    const photos = props.garden.photos ?? [];
+    const urls = props.photoImageUrls ?? {};
+
+    for (const photo of photos) {
+      const { x, y } = photo.position;
+      const icon = L.divIcon({
+        className: styles.photoMarker,
+        html: `<span class="${styles.photoIcon}">📷</span>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      });
+
+      const marker = L.marker([y, x], { icon }).addTo(photosLayer);
+
+      const imageUrl = urls[photo.imageId];
+      const dateStr = new Date(photo.createdAt).toLocaleDateString();
+      const popupContent = imageUrl
+        ? `<div style="text-align:center"><img src="${imageUrl}" style="max-width:200px;max-height:150px;border-radius:6px;" /><br/><small>${dateStr}</small>${props.onPhotoDelete ? `<br/><button onclick="window.__deletePhoto__('${photo.id}')" style="margin-top:4px;padding:2px 8px;font-size:12px;cursor:pointer;">🗑 Delete</button>` : ""}</div>`
+        : `<div>📷 Photo<br/><small>${dateStr}</small></div>`;
+
+      marker.bindPopup(popupContent, { maxWidth: 220 });
+    }
+
+    // Register global delete handler for popup buttons
+    if (props.onPhotoDelete) {
+      (window as any).__deletePhoto__ = (photoId: string) => {
+        props.onPhotoDelete?.(photoId);
+      };
     }
   }
 
@@ -557,6 +602,13 @@ export default function GardenEditor(props: GardenEditorProps) {
   createEffect(() => {
     const _ = props.garden.elements;
     renderElements();
+  });
+
+  // Re-render photos when garden photos change
+  createEffect(() => {
+    const _ = props.garden.photos;
+    const __ = props.photoImageUrls;
+    renderPhotos();
   });
 
   // ── Background Toggle ──

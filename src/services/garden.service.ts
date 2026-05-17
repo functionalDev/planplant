@@ -35,7 +35,7 @@ export function createGardenService(storage: StorageAdapter) {
 
     async updateGarden(
       id: string,
-      updates: Partial<Pick<Garden, "name" | "description" | "location" | "geoReference" | "backgroundImageId" | "border" | "elements" | "groundRegions">>,
+      updates: Partial<Pick<Garden, "name" | "description" | "location" | "geoReference" | "backgroundImageId" | "border" | "elements" | "groundRegions" | "photos">>,
     ): Promise<Garden> {
       const garden = await storage.getGarden(id);
       if (!garden) throw new Error(`Garden ${id} not found`);

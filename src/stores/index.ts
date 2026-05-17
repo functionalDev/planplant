@@ -12,6 +12,8 @@ export {
   addGroundRegion,
   deleteGroundRegion,
   updateGroundRegions,
+  addPhoto,
+  deletePhoto,
   saveGardenImage,
   loadGardenImage,
 } from "./garden.store";

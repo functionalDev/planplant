@@ -1,27 +1,140 @@
 .container {
-  max-width: 800px;
+  padding: 1rem;
+  max-width: 480px;
   margin: 0 auto;
 }
 
 .title {
-  font-size: 1.75rem;
-  color: #2e7d32;
+  font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .description {
-  color: #555;
+  color: #666;
   margin-bottom: 1.5rem;
+  line-height: 1.5;
 }
 
-.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 300px;
-  background: #ffffff;
-  border: 2px dashed #c8e6c9;
-  border-radius: 0.75rem;
-  color: #999;
+.captureBtn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
   font-size: 1.1rem;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.captureBtn:active {
+  background: #1b5e20;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.previewImage {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+}
+
+.gpsInfo {
+  font-size: 0.9rem;
+}
+
+.gpsLoading {
+  color: #f57c00;
+}
+
+.gpsDone {
+  color: #2e7d32;
+}
+
+.gpsError {
+  color: #d32f2f;
+}
+
+.gardenSelect {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gardenSelect label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.gardenSelect select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.success {
+  color: #2e7d32;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.saveBtn {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.saveBtn:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.saveBtn:not(:disabled):active {
+  background: #1b5e20;
+}
+
+.discardBtn {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.discardBtn:active {
+  background: #e0e0e0;
 }
