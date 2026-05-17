@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#2e7d32"/>
+  <g fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Plant stem -->
+    <path d="M256 400 V240"/>
+    <!-- Leaves -->
+    <path d="M256 280 C220 240 180 250 170 210 C210 210 240 230 256 260"/>
+    <path d="M256 320 C292 280 332 290 342 250 C302 250 272 270 256 300"/>
+    <!-- Top leaf -->
+    <path d="M256 240 C236 200 240 160 260 130 C280 160 276 200 256 240"/>
+  </g>
+  <!-- Ground -->
+  <path d="M120 400 H392" stroke="#a5d6a7" stroke-width="16" stroke-linecap="round" fill="none"/>
+</svg>
